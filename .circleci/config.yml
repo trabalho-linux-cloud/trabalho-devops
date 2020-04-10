@@ -28,9 +28,9 @@ jobs:
     docker:
       - image: circleci/node
       #- image: mongo
-      environment:
-        HEROKU_APP_NAME: trabalho-devops2
-        HEROKU_API_KEY: 94c447cc-c508-4238-a454-ee7aca171bca
+    environment:
+      HEROKU_APP_NAME: trabalho-devops2
+      HEROKU_API_KEY: 94c447cc-c508-4238-a454-ee7aca171bca
     steps:
       - checkout
       - run:
