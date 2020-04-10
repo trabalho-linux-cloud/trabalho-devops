@@ -4,18 +4,13 @@ orbs:
 jobs:
   build:
     working_directory: ~/mern-starter
-    # The primary container is an instance of the first image listed. The job's commands run in this container.
     docker:
       - image: circleci/node
-    # The secondary container is an instance of the second listed image which is run in a common network where ports exposed on the primary container are available on localhost.
-      #- image: mongo
     steps:
       - checkout
       - run:
           name: Update npm
           command: 'sudo npm install -g npm@latest'
-      #- restore_cache:
-      #    key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
           name: Install npm wee
           command: npm install
@@ -27,23 +22,22 @@ jobs:
   test:
     docker:
       - image: circleci/node
-    # - image: mongo
     environment:
       HEROKU_APP_NAME: trabalho-devops
       HEROKU_API_KEY: 94c447cc-c508-4238-a454-ee7aca171bca
     steps:
       - checkout
       - run:
-          name: Teste disponibilidade Heroku
+          name: Test Heroku availability
           command: |
             if [[ $(curl -Is https://${HEROKU_APP_NAME}.herokuapp.com | head -1) == *"200"* ]]; then
-              echo "Heroku disponível"
+              echo "Heroku available"
             else
-              echo "Heroku indisponível"
-              Erro: "Heroku indisponível"
+              echo "Heroku unavailable"
+              Erro: "Heroku unavailable"
             fi
 
-  publish_and_deploy:
+  publish:
     docker:
       - image: circleci/node
     environment:
@@ -55,7 +49,6 @@ jobs:
       CIRCLE_BRANCH: master
     steps:
       - checkout
-      #- heroku/install
       - run:
           name: Install Heroku CLI (If not installed)      
           command: |
@@ -65,16 +58,11 @@ jobs:
               echo "Heroku is already installed. No operation was performed."
             fi
       - run:
-          name: Pull from master branch from Heroku
+          name: Push to Heroku master branch
           command: |
-             ls -a
-             pwd
              cd ..
-             pwd
              git clone ${GITHUB_REPO} devops
              cd devops
-             pwd
-             ls
              heroku access --app ${HEROKU_APP_NAME}
              touch "Change for commit" > init.txt
              git add .
@@ -82,15 +70,28 @@ jobs:
              git config --global user.name ${USER_NAME}
              git commit -am "Commit Circle CI"       
              git push --force https://heroku:${HEROKU_API_KEY}@git.heroku.com/${HEROKU_APP_NAME}.git ${CIRCLE_BRANCH}:master
+  
+  deploy:
+    docker:
+      - image: circleci/node
+    steps:
+      - checkout
+      - run:
+          name: Heroku deploy
+          command: |
+              echo "The deployment is done in Heroku"
 
 workflows:
   version: 2.1
-  build-and-deploy:
+  pipeline-master:
     jobs:
       - build
       - test:
           requires:
             - build
-      - publish_and_deploy:
+      - publish:
           requires:
             - test
+      - deploy:
+          requires:
+            - publish
