@@ -72,7 +72,7 @@ jobs:
              cd ..
              pwd
              git clone $GITHUB_REPO devops
-             cd devops
+             cd devops/app
              pwd
              ls
              heroku access --app $HEROKU_APP_NAME
