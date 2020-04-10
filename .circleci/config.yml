@@ -1,0 +1,96 @@
+version: 2.1
+orbs:
+  heroku: circleci/heroku@1.0.1
+jobs:
+  build:
+    working_directory: ~/mern-starter
+    # The primary container is an instance of the first image listed. The job's commands run in this container.
+    docker:
+      - image: circleci/node
+    # The secondary container is an instance of the second listed image which is run in a common network where ports exposed on the primary container are available on localhost.
+      #- image: mongo
+    steps:
+      - checkout
+      - run:
+          name: Update npm
+          command: 'sudo npm install -g npm@latest'
+      #- restore_cache:
+      #    key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: Install npm wee
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+
+  test:
+    docker:
+      - image: circleci/node
+      #- image: mongo
+      environment:
+        HEROKU_APP_NAME: trabalho-devops2
+        HEROKU_API_KEY: 94c447cc-c508-4238-a454-ee7aca171bca
+    steps:
+      - checkout
+      - run:
+          name: Teste disponibilidade Heroku
+          command: |
+            if [[ $(curl -Is https://$HEROKU_APP_NAME.herokuapp.com | head -1) == *"200"* ]]; then
+              echo "Heroku disponível"
+            else
+              echo "Heroku indisponível"
+              Erro: "Heroku indisponível"
+            fi
+
+  publish_and_deploy:
+    docker:
+      - image: circleci/node
+    environment:
+      GITHUB_REPO: https://github.com/trabalho-linux-cloud/trabalho-devops
+      HEROKU_APP_NAME: trabalho-devops2
+      HEROKU_API_KEY: 94c447cc-c508-4238-a454-ee7aca171bca
+      USER_EMAIL: trabalho.linux.cloud@gmail.com
+      USER_NAME: Linux Cloud
+      #CIRCLE_BRANCH: master
+    steps:
+      - checkout
+      #- heroku/install
+      - run:
+          name: Install Heroku CLI (If not installed)      
+          command: |
+            if [[ $(command -v heroku) == "" ]]; then
+              curl https://cli-assets.heroku.com/install.sh | sh
+            else
+              echo "Heroku is already installed. No operation was performed."
+            fi
+      - run:
+          name: Pull from master branch from Heroku
+          command: |
+             ls -a
+             pwd
+             cd ..
+             pwd
+             git clone $GITHUB_REPO devops
+             cd devops
+             pwd
+             ls
+             heroku access --app $HEROKU_APP_NAME
+             touch "Initialize" > teste.txt
+             git add .
+             git config --global user.email $USER_EMAIL
+             git config --global user.name $USER_NAME
+             git commit -am "Commit Circle CI"       
+             git push --force https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master:master
+
+workflows:
+  version: 2.1
+  build-and-deploy:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - publish_and_deploy:
+          requires:
+            - test
