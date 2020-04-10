@@ -29,7 +29,7 @@ jobs:
       - image: circleci/node
     # - image: mongo
     environment:
-      HEROKU_APP_NAME: trabalho-devops2
+      HEROKU_APP_NAME: trabalho-devops
       HEROKU_API_KEY: 94c447cc-c508-4238-a454-ee7aca171bca
     steps:
       - checkout
@@ -48,7 +48,7 @@ jobs:
       - image: circleci/node
     environment:
       GITHUB_REPO: https://github.com/trabalho-linux-cloud/trabalho-devops
-      HEROKU_APP_NAME: trabalho-devops2
+      HEROKU_APP_NAME: trabalho-devops
       HEROKU_API_KEY: 94c447cc-c508-4238-a454-ee7aca171bca
       USER_EMAIL: trabalho.linux.cloud@gmail.com
       USER_NAME: Linux Cloud
