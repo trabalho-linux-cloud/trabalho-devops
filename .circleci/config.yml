@@ -36,7 +36,7 @@ jobs:
       - run:
           name: Teste disponibilidade Heroku
           command: |
-            if [[ $(curl -Is https://$HEROKU_APP_NAME.herokuapp.com | head -1) == *"200"* ]]; then
+            if [[ $(curl -Is https://${HEROKU_APP_NAME}.herokuapp.com | head -1) == *"200"* ]]; then
               echo "Heroku disponível"
             else
               echo "Heroku indisponível"
@@ -71,17 +71,17 @@ jobs:
              pwd
              cd ..
              pwd
-             git clone $GITHUB_REPO devops
+             git clone ${GITHUB_REPO} devops
              cd devops/app
              pwd
              ls
-             heroku access --app $HEROKU_APP_NAME
+             heroku access --app ${HEROKU_APP_NAME}
              touch "Initialize" > teste.txt
              git add .
-             git config --global user.email $USER_EMAIL
-             git config --global user.name $USER_NAME
+             git config --global user.email ${USER_EMAIL}
+             git config --global user.name ${USER_NAME}
              git commit -am "Commit Circle CI"       
-             git push --force https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master:master
+             git push --force https://heroku:${HEROKU_API_KEY}@git.heroku.com/${HEROKU_APP_NAME}.git master:master
 
 workflows:
   version: 2.1
