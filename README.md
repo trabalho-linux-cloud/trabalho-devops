@@ -31,8 +31,8 @@ Desenvolvimento de um pipeline com fluxos de CI/CD utilizando as ferramentas Git
 
 # Vantagem em relação a outras ferramentas
 - Ambas as ferramentas possuem um plano gratuito para utilização e realização de uma avaliação.
+- Ambas as ferramentas rodam em Cloud, não exigem instalação em um servidor dedicado.
 ## CircleCI
-- Ferramenta Cloud, não exige instalação em um servidor dedicado.
 - Permite a realização de SSH para acessar o contêiner e verificar problemas.
 - Possui um sistema de notificações que pode ser implementado.
 - Paralelização automática.
